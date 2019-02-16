@@ -28,7 +28,8 @@ public class Game {
     public Game(){
         reader  = new Scanner(System.in);
 
-        Player BlueMaster = new Human("B1", BLUE, true, reader);
+//        Player BlueMaster = new Human("B1", BLUE, true, reader);
+        Player BlueMaster = new AI("B1", BLUE, true);
         Player BlueSpy = new Human("B2", BLUE, false, reader);
         Player RedMaster = new Human("R1", RED, true, reader);
         Player RedSpy = new Human("R2", RED, false, reader);
@@ -55,10 +56,8 @@ public class Game {
         }
 
         Board board = new Board(blueStarts);
-//        board.print();
 
         while (blue > 0 && red > 0) {
-//            board.print();
 
             Player p1 = turnOrder.remove();
             Player p2 = turnOrder.remove();
@@ -69,7 +68,6 @@ public class Game {
             Guess guess = p2.getNextGuess(hint, board);
 
             int guesses = hint.getAmount();
-//            Guess guess = takeTurn(p1, p2, board);
             ArrayList<String> words = guess.words;
 
             int size = words.size();
@@ -126,10 +124,6 @@ public class Game {
         }
 
 
-
-
-
-
     }
 
 
@@ -176,41 +170,3 @@ public class Game {
 
 
 }
-
-//            if (words.size() > 0) {
-//
-//
-//                    for (String word : words) {
-//                    if (StringUtils.isNotBlank(word)) {
-//
-//                    Card card = board.getCard(word);
-//                    board.flipCard(word);
-//                    if (card.type.equals(RED)||card.type.equals(BLUE)) {
-//                    assignScore(card);
-//                    if (card.type.equals(p1.getType())) {
-//                    //do nothing
-//                    }
-//                    else {
-//                    break;
-//                    }
-//                    }
-//                    if (card.type.equals(ASSASSIN)){
-//                    if (p1.getType().equals(RED)){
-//                    System.out.println("BLUE WINS!");
-//                    }
-//                    else {
-//                    System.out.println("RED WINS!");
-//                    }
-//                    return;//todo: finish game
-//                    }
-//                    if (card.type.equals(INNOCENT)){
-//                    System.out.println("Innocent Card");
-//                    break;
-//                    }
-//                    }
-//                    if (checkScores()){
-//                    return;
-//                    }
-//                    }
-//
-//                    }
