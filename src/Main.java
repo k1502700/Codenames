@@ -1,4 +1,5 @@
 import Game.Game;
+import XMLProcessing.XMLConverter;
 
 public class Main {
 
@@ -8,7 +9,8 @@ public class Main {
 //
 //        anna.meow(5);
 
-        new Game();
+//        new Game();
 
+        new XMLConverter();
     }
 }
