@@ -1,5 +1,6 @@
 package Game;
 
+import XMLProcessing.StimResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -19,10 +20,12 @@ public class Board {
     int assassin;
     int innocent;
     String starter;
+    StimResponse sr;
 
 
-    public Board(boolean blueStarts){
+    public Board(boolean blueStarts, StimResponse sr){
 
+        this.sr = sr;
         initialize(blueStarts);
 
 
@@ -43,7 +46,8 @@ public class Board {
         assassin = 1;
         innocent= 7;
 
-        WordGenerator wg = new WordGenerator();
+        WordGenerator wg = new WordGenerator(sr);
+        wg.allWordsIncludedCheck();
         ArrayList<String> wordList = wg.getWords(25);
 
         int counter = 0;
@@ -106,6 +110,30 @@ public class Board {
             }
         }
         throw new IllegalArgumentException();
+    }
+
+    public ArrayList<Card> getAllCards(){
+        ArrayList<Card> cardList = new ArrayList<>();
+
+        for (int i = 0; i < 5; i ++){
+            for (int j = 0; j < 5; j ++){
+                if (!board[i][j].removed){
+                    cardList.add(board[i][j]);
+                }
+            }
+        }
+        return cardList;
+    }
+
+    public ArrayList<String> getAllWords(){
+        ArrayList<Card> cardList = getAllCards();
+        ArrayList<String> wordList = new ArrayList<>();
+
+        for (Card c: cardList){
+            wordList.add(c.getWord());
+        }
+
+        return wordList;
     }
 
     public void printPlayer() {

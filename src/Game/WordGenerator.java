@@ -1,5 +1,8 @@
 package Game;
 
+import XMLProcessing.StimResponse;
+import XMLProcessing.Stimulus;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -7,6 +10,7 @@ public class WordGenerator {
 
     ArrayList<String> wordList = new ArrayList<>();
     Random random = new Random();
+    StimResponse sr;
 
     public String getWord(){
         if (wordList.size() < 1){
@@ -27,7 +31,30 @@ public class WordGenerator {
         return returnList;
     }
 
-    public WordGenerator(){
+    public void allWordsIncludedCheck(){
+
+        ArrayList<String> missingList = (ArrayList<String>) wordList.clone();
+        ArrayList<Stimulus> stimList = this.sr.getStimuli();
+        ArrayList<String> stimWordList = new ArrayList<>();
+
+        for (Stimulus s: stimList){
+            stimWordList.add(s.getWord());
+        }
+
+        missingList.removeAll(stimWordList);
+        wordList.removeAll(missingList);
+        System.out.println(stimWordList);
+//        if (stimWordList.containsAll(wordList)){
+//            System.out.println("Al words accounted for!");
+//        }
+//        else{
+//            System.out.println("We got a problem");
+//        }
+
+    }
+
+    public WordGenerator(StimResponse sr){
+        this.sr = sr;
 
         wordList.add("AFRICA");
         wordList.add("AGENT");

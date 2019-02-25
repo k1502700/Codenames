@@ -78,4 +78,8 @@ public class Card {
         }
         return word;
     }
+
+    public String getType() {
+        return type;
+    }
 }

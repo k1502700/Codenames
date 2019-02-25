@@ -1,6 +1,8 @@
 package Game;
 
 import Player.*;
+import XMLProcessing.StimResponse;
+import XMLProcessing.XMLConverter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -13,6 +15,16 @@ public class Game {
     static final String RED = "RED";
     static final String ASSASSIN = "ASSASSIN";
     static final String INNOCENT = "INNOCENT";
+
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+
+
+    StimResponse sr;
 
     Player currentPlayer;
     int red;
@@ -28,16 +40,21 @@ public class Game {
     public Game(){
         reader  = new Scanner(System.in);
 
+        System.out.println("Converting XML");
+        this.sr = new XMLConverter().getSr();
+        System.out.println("Converted XML");
+
 //        Player BlueMaster = new Human("B1", BLUE, true, reader);
-        Player BlueMaster = new AI("B1", BLUE, true);
+        Player BlueMaster = new AI("B1", BLUE, true, sr);
         Player BlueSpy = new Human("B2", BLUE, false, reader);
-        Player RedMaster = new Human("R1", RED, true, reader);
+//        Player RedMaster = new Human("R1", RED, true, reader);
+        Player RedMaster = new AI("R1", RED, true, sr);
         Player RedSpy = new Human("R2", RED, false, reader);
 
         LinkedList<Player> turnOrder = new LinkedList<>();
 //        ArrayList<Player> AturnOrder = new ArrayList<>();
 
-        boolean blueStarts = random.nextInt(2) == 1;
+        boolean blueStarts = true;//random.nextInt(2) == 1; todo: remove this
         if (blueStarts){
             blue = 9;
             red = 8;
@@ -55,7 +72,7 @@ public class Game {
             turnOrder.add(BlueSpy);
         }
 
-        Board board = new Board(blueStarts);
+        Board board = new Board(blueStarts, sr);
 
         while (blue > 0 && red > 0) {
 
@@ -137,11 +154,11 @@ public class Game {
 
     public void assignScore(Card card){
         if (card.type.equals(RED)){
-            System.out.println("Red Card");
+            System.out.println(ANSI_RED + "Red Card" + ANSI_RESET);
             red--;
         }
         else if (card.type.equals(BLUE)){
-            System.out.println("Blue Card");
+            System.out.println(ANSI_BLUE + "Blue Card" + ANSI_RESET);
             blue--;
         }
         else{
@@ -155,11 +172,11 @@ public class Game {
             return true;
         }
         if (red < 1){
-            System.out.println("RED WINS!");
+            System.out.println(ANSI_RED + "RED WINS!" + ANSI_RESET);
             return true;
         }
         if (blue < 1){
-            System.out.println("BLUE WINS!");
+            System.out.println(ANSI_BLUE + "BLUE WINS!" + ANSI_RESET);
             return true;
         }
         return false;

@@ -31,6 +31,7 @@ public class Human extends Player {
         System.out.println("Enter guessed word: ");
         String guessWord = reader.next();
 
+        guessWord = StringUtils.upperCase(guessWord);
 //        System.out.println(guessWord);
 
         ArrayList<String> returnList = new ArrayList<>();
@@ -49,7 +50,7 @@ public class Human extends Player {
             System.out.println("Enter next word or leave \"X\" if no further guesses: ");
             guessWord = reader.next();
 
-            if (guessWord.equals("X")){
+            if (guessWord.equals("X") || guessWord.equals("x")){
                 break;
             }
             else {

@@ -17,4 +17,16 @@ public class Response {
         this.n = n;
         this.r = r;
     }
+
+    public String getWord() {
+        return word;
+    }
+
+    public int getAmount() {
+        return n;
+    }
+
+    public double getRatio() {
+        return r;
+    }
 }

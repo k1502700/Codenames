@@ -19,24 +19,6 @@ public class XMLConverter {
         xstream.processAnnotations(Stimulus.class);
         xstream.processAnnotations(Response.class);
         xstream.processAnnotations(StimResponse.class);
-//        xstream.alias("stimulus", Stimulus.class);
-//        xstream.alias("response", Response.class);
-
-        Response r1 = new Response("Bee", 6, 0.6);
-        Response r2 = new Response("Bear", 3, 0.3);
-        Response r3 = new Response("Pooh", 1, 0.1);
-
-        Stimulus honey = new Stimulus("Honey", 10, 3);
-        honey.addResponse(r1);
-        honey.addResponse(r2);
-        honey.addResponse(r3);
-
-
-
-
-        String honeyXml = xstream.toXML(honey);
-
-        System.out.println(honeyXml);
 
         String input = "";
         try {

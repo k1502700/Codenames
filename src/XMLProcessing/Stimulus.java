@@ -27,4 +27,12 @@ public class Stimulus {
     public void addResponse(Response r){
         responses.add(r);
     }
+
+    public String getWord() {
+        return word;
+    }
+
+    public ArrayList<Response> getResponses() {
+        return (ArrayList<Response>)responses;
+    }
 }
