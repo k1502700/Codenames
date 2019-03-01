@@ -43,7 +43,7 @@ public class WordGenerator {
 
         missingList.removeAll(stimWordList);
         wordList.removeAll(missingList);
-        System.out.println(stimWordList);
+//        System.out.println(stimWordList);
 //        if (stimWordList.containsAll(wordList)){
 //            System.out.println("Al words accounted for!");
 //        }

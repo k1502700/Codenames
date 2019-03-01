@@ -1,8 +1,8 @@
 package Game;
 
 import Player.*;
+import Utility.Evaluator;
 import XMLProcessing.StimResponse;
-import XMLProcessing.XMLConverter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -23,10 +23,11 @@ public class Game {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_BLUE = "\u001B[34m";
 
+    Evaluator evaluator;
 
     StimResponse sr;
 
-    Player currentPlayer;
+    Board board;
     int red;
     int blue;
 
@@ -37,19 +38,22 @@ public class Game {
 
 
 
-    public Game(){
-        reader  = new Scanner(System.in);
+    public Game(Scanner reader, StimResponse sr, Evaluator eva){
 
-        System.out.println("Converting XML");
-        this.sr = new XMLConverter().getSr();
-        System.out.println("Converted XML");
+        this.evaluator = eva;
+//        System.out.println("Converting XML");
+        this.sr = sr;
+
+//        System.out.println("Converted XML");
 
 //        Player BlueMaster = new Human("B1", BLUE, true, reader);
         Player BlueMaster = new AI("B1", BLUE, true, sr);
-        Player BlueSpy = new Human("B2", BLUE, false, reader);
+//        Player BlueSpy = new Human("B2", BLUE, false, reader);
+        Player BlueSpy = new AI("B2", BLUE, false, sr);
 //        Player RedMaster = new Human("R1", RED, true, reader);
         Player RedMaster = new AI("R1", RED, true, sr);
-        Player RedSpy = new Human("R2", RED, false, reader);
+//        Player RedSpy = new Human("R2", RED, false, reader);
+        Player RedSpy = new AI("R2", RED, false, sr);
 
         LinkedList<Player> turnOrder = new LinkedList<>();
 //        ArrayList<Player> AturnOrder = new ArrayList<>();
@@ -72,7 +76,7 @@ public class Game {
             turnOrder.add(BlueSpy);
         }
 
-        Board board = new Board(blueStarts, sr);
+        board = new Board(blueStarts, sr);
 
         while (blue > 0 && red > 0) {
 
@@ -117,22 +121,46 @@ public class Game {
                             }
                         }
                         if (card.type.equals(ASSASSIN)){
+                            System.out.println(ANSI_BLACK + "Assassin Card: " + ANSI_RESET + card);
+                            evaluator.endedWithAssassin();
                             if (p1.getType().equals(RED)){
-                                System.out.println("BLUE WINS!");
+                                System.out.println(ANSI_BLUE + "BLUE WINS!" + ANSI_RESET);
+                                evaluator.blueWon();
                             }
                             else {
-                                System.out.println("RED WINS!");
+                                System.out.println(ANSI_RED + "RED WINS!" + ANSI_RESET);
+                                evaluator.redWon();
                             }
                             board.flipCard(guessedWord);
+                            board.printSpyMaster();
                             return;//todo: finish game
                         }
                         if (card.type.equals(INNOCENT)){
-                            System.out.println("Innocent Card");
+                            System.out.println("Innocent Card: " + card);
                             board.flipCard(guessedWord);
                             break;
                         }
                     }
                 }
+            }
+
+            if (blue < 1 && red < 1){
+                board.printSpyMaster();
+                throw new IllegalStateException("Draw");
+            }
+
+            if (blue < 1){
+                evaluator.blueWon();
+                System.out.println(ANSI_BLUE + "BLUE WINS!" + ANSI_RESET);
+                board.printSpyMaster();
+                return;
+            }
+
+            if (red < 1){
+                evaluator.redWon();
+                System.out.println(ANSI_RED + "RED WINS!" + ANSI_RESET);
+                board.printSpyMaster();
+                return;
             }
 
             turnOrder.add(p1);
@@ -154,11 +182,11 @@ public class Game {
 
     public void assignScore(Card card){
         if (card.type.equals(RED)){
-            System.out.println(ANSI_RED + "Red Card" + ANSI_RESET);
+            System.out.println(ANSI_RED + "Red Card: " + ANSI_RESET + card);
             red--;
         }
         else if (card.type.equals(BLUE)){
-            System.out.println(ANSI_BLUE + "Blue Card" + ANSI_RESET);
+            System.out.println(ANSI_BLUE + "Blue Card: " + ANSI_RESET + card);
             blue--;
         }
         else{
@@ -169,19 +197,33 @@ public class Game {
     public boolean checkScores(){
         if (red < 1 && blue < 1){
             System.out.println("DRAW?!");
+            board.printSpyMaster();
             return true;
         }
         if (red < 1){
             System.out.println(ANSI_RED + "RED WINS!" + ANSI_RESET);
+            evaluator.redWon();
+            board.printSpyMaster();
             return true;
         }
         if (blue < 1){
             System.out.println(ANSI_BLUE + "BLUE WINS!" + ANSI_RESET);
+            evaluator.blueWon();
+            board.printSpyMaster();
             return true;
         }
         return false;
     }
 
+    public void printCup(){
+        System.out.println("|-------|\n" +
+                "|       |\n" +
+                "|  A A  |\n" +
+                " \\     /\n" +
+                "  \\   /\n" +
+                "  |   |\n" +
+                " |_____|");
+    }
 
 
 

@@ -109,7 +109,7 @@ public class Board {
                 }
             }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("No such card on the board");
     }
 
     public ArrayList<Card> getAllCards(){
@@ -157,7 +157,7 @@ public class Board {
     }
 
     public void printSpyMaster() {
-
+        System.out.println("--------------------------------------------------");
         for (Card[] row : board){
             for (Card card: row){
                 if (StringUtils.isNotBlank(card.getWord())){
@@ -169,7 +169,7 @@ public class Board {
             }
             System.out.println();
         }
-        System.out.println();
+        System.out.println("--------------------------------------------------");
     }
 
     public void print() {

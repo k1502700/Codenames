@@ -13,8 +13,10 @@ public class XMLConverter {
 
     public XMLConverter() {
 
-
+        Class<?>[] classes = new Class[] { Stimulus.class, Response.class, StimResponse.class};
         XStream xstream = new XStream();
+        XStream.setupDefaultSecurity(xstream);
+        xstream.allowTypes(classes);
 
         xstream.processAnnotations(Stimulus.class);
         xstream.processAnnotations(Response.class);

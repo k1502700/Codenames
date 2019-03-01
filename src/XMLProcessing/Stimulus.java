@@ -28,6 +28,10 @@ public class Stimulus {
         responses.add(r);
     }
 
+    public int getAll() {
+        return all;
+    }
+
     public String getWord() {
         return word;
     }

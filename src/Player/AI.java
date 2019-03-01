@@ -4,19 +4,12 @@ import Game.Board;
 import Game.Card;
 import Game.Guess;
 import Game.Hint;
-import java.io.IOException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import XMLProcessing.Response;
 import XMLProcessing.StimResponse;
 import XMLProcessing.Stimulus;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class AI extends Player{
     static final String BLUE = "BLUE";
@@ -37,7 +30,8 @@ public class AI extends Player{
     @Override
     public Hint getNextHint(Board board) {
 
-        System.out.println("Generating Hint...");
+//        board.printSpyMaster();
+        System.out.print("Generating Hint... : ");
 
         Double score = 0.0;
 
@@ -45,6 +39,7 @@ public class AI extends Player{
         ArrayList<String> wordList = board.getAllWords();
         ArrayList<Stimulus> stimList = new ArrayList<>();
         ArrayList<Double> scoreList = new ArrayList<>();
+        ArrayList<Integer> amountlist = new ArrayList<>();
 
         for (Stimulus stimulus: sr.getStimuli()){
             try {
@@ -62,22 +57,37 @@ public class AI extends Player{
             }
         }
 
-
-
         for (int i = 0; i < stimList.size(); i++) {
             scoreList.add( 0.0);
+            amountlist.add(0);
         }
+
         for (String s: wordList){
             s.hashCode();//
         }
 
         for (int i = 0; i < stimList.size(); i++){
             score = 0.0;
+            ArrayList<Double> tempScores = new ArrayList<>();
             for (Response response: stimList.get(i).getResponses()){
                 if (wordList.contains(response.getWord())){
-
-                    score += getMultiplier(board.getCard(response.getWord())) * response.getRatio();
+                    double temp = getMultiplier(board.getCard(response.getWord())) * response.getMathematicalRatio(stimList.get(i));
+                    tempScores.add(temp);
+                    score += temp;
                     scoreList.set(i, score);
+                }
+            }
+            Collections.sort(tempScores);
+            double min = tempScores.get(0);
+            Collections.reverse(tempScores);
+
+            for (int j = 0; j < tempScores.size(); j++){
+
+                if (tempScores.get(j) >= Math.abs(min) && tempScores.get(j) > 0){
+                    amountlist.set(i, amountlist.get(i) + 1);
+                }
+                else {
+                    break;
                 }
             }
         }
@@ -96,17 +106,33 @@ public class AI extends Player{
 
         int amount = 1;
 
+        if (amountlist.get(bestHint) < 1){
+            amountlist.set(bestHint, 1);
+        }
+        if (amountlist.get(secondBestHint) < 1){
+            amountlist.set(secondBestHint, 1);
+        }
+
+
+
+
+
 
         //todo: amount -- should be the amount of positives that are abs() larger than the negatives
-
-
+        //todo: mi van ha csak olyan asszociacio van amiben az assassin is benne van?
         if (lastHint.equals(stimList.get(bestHint).getWord())){
+            amount = amountlist.get(secondBestHint);
+            lastHint = stimList.get(secondBestHint).getWord();
+            System.out.println(stimList.get(secondBestHint).getWord());
 //            lastHint = stimList.get(secondBestHint).getWord(); //todo: do i want to keep it - blacklist last incorrect guess
             return new Hint(stimList.get(secondBestHint).getWord(), board, amount);
         }
-        lastHint = stimList.get(bestHint).getWord();
-        return new Hint(stimList.get(bestHint).getWord(), board, amount);
-
+        else {
+            amount = amountlist.get(bestHint);
+            lastHint = stimList.get(bestHint).getWord();
+            System.out.println(stimList.get(bestHint).getWord());
+            return new Hint(stimList.get(bestHint).getWord(), board, amount);
+        }
 //        return new Hint("", board, 1);
     }
 
@@ -124,7 +150,7 @@ public class AI extends Player{
                 break;
             case RED: multiplier = -1 * switcher;
                 break;
-            case ASSASSIN: multiplier = -1000;
+            case ASSASSIN: multiplier = -10;
                 break;
             case INNOCENT: multiplier = 0;
                 break;
@@ -139,6 +165,31 @@ public class AI extends Player{
 
     public Guess getNextGuess(Hint hint, Board board){
         ArrayList<String> wordList = new ArrayList<>();
+        Stimulus stimulus;
+
+        try {
+            stimulus = sr.getStimulus(hint.getWord());
+        }
+        catch (IllegalArgumentException e){
+            System.out.println(e);
+            return new Guess(wordList);
+        }
+
+        ArrayList<Response> responseList = stimulus.getResponses();
+        Collections.sort(responseList);
+
+        for (Response r: responseList){
+            try {
+                wordList.add(board.getCard(r.getWord()).getWord());
+            }
+            catch (IllegalArgumentException e){
+                //do nothing
+            }
+        }
+
+        if (wordList.size() < 1){
+            throw new IllegalArgumentException("Error creating new Guess");
+        }
 //        wordList.add()
         return new Guess(wordList);
     }
