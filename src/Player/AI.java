@@ -17,14 +17,27 @@ public class AI extends Player{
     static final String ASSASSIN = "ASSASSIN";
     static final String INNOCENT = "INNOCENT";
 
+    static final String VALUE = "VALUE";
+    static final String COMBO = "COMBO";
+    static final String ALTERNATECOMBO = "ALTERNATECOMBO";
+
     StimResponse sr;
     String lastHint = "";
+    String strategy = "";
 
     public AI(String name, String type, boolean isSpymaster, StimResponse sr) {
         this.name = name;
         this.isSpymaster = isSpymaster;
         this.type = type;
         this.sr = sr;
+        this.strategy = COMBO;
+    }
+    public AI(String name, String type, boolean isSpymaster, StimResponse sr, String strategy) {
+        this.name = name;
+        this.isSpymaster = isSpymaster;
+        this.type = type;
+        this.sr = sr;
+        this.strategy = strategy;
     }
 
     @Override
@@ -72,6 +85,12 @@ public class AI extends Player{
             for (Response response: stimList.get(i).getResponses()){
                 if (wordList.contains(response.getWord())){
                     double temp = getMultiplier(board.getCard(response.getWord())) * response.getMathematicalRatio(stimList.get(i));
+                    if (strategy.equals(COMBO) && temp >= 0.25){
+                        temp = 0.25;
+                    }
+                    if (strategy.equals(ALTERNATECOMBO)){
+                        temp = Math.sqrt(Math.sqrt(temp))/2;
+                    }
                     tempScores.add(temp);
                     score += temp;
                     scoreList.set(i, score);
@@ -152,7 +171,7 @@ public class AI extends Player{
                 break;
             case ASSASSIN: multiplier = -10;
                 break;
-            case INNOCENT: multiplier = 0;
+            case INNOCENT: multiplier = -0.75;
                 break;
             default:  multiplier = 1;
                 System.out.println("Incorrect card type provided to AI");

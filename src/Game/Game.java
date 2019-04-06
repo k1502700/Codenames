@@ -23,6 +23,10 @@ public class Game {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_BLUE = "\u001B[34m";
 
+    static final String VALUE = "VALUE";
+    static final String COMBO = "COMBO";
+    static final String ALTERNATECOMBO = "ALTERNATECOMBO";
+
     Evaluator evaluator;
 
     StimResponse sr;
@@ -51,14 +55,14 @@ public class Game {
 //        Player BlueSpy = new Human("B2", BLUE, false, reader);
         Player BlueSpy = new AI("B2", BLUE, false, sr);
 //        Player RedMaster = new Human("R1", RED, true, reader);
-        Player RedMaster = new AI("R1", RED, true, sr);
+        Player RedMaster = new AI("R1", RED, true, sr, ALTERNATECOMBO);
 //        Player RedSpy = new Human("R2", RED, false, reader);
-        Player RedSpy = new AI("R2", RED, false, sr);
+        Player RedSpy = new AI("R2", RED, false, sr, ALTERNATECOMBO);
 
         LinkedList<Player> turnOrder = new LinkedList<>();
 //        ArrayList<Player> AturnOrder = new ArrayList<>();
 
-        boolean blueStarts = true;//random.nextInt(2) == 1; todo: remove this
+        boolean blueStarts = false;//random.nextInt(2) == 1; todo: remove this
         if (blueStarts){
             blue = 9;
             red = 8;
@@ -77,6 +81,7 @@ public class Game {
         }
 
         board = new Board(blueStarts, sr);
+        board.printSpyMaster();
 
         while (blue > 0 && red > 0) {
 
